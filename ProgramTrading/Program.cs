@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MrWangAPI;
+using NLog;
 
 
 namespace ProgramTrading
 {
     class Program
     {
+        static Logger logger = LogManager.GetCurrentClassLogger();
         static MrWangConnection MrWangConnection;
         static void Main(string[] args)
         {
+            logger.Info("Holle");
+            logger.Error("1");
 
+
+            C();
+            B();
+            A();
             //第一步.初始化API元件
             init();
 
@@ -24,7 +32,7 @@ namespace ProgramTrading
                 Console.ReadKey();
             }
         }
-
+        
         private static void init()
         {
             //建立API執行個體
@@ -84,6 +92,19 @@ namespace ProgramTrading
 
                 //第四步 訂閱報價
                 MrWangConnection.SubscribeQuote("TXFD9");
+
+                //產生下單物件
+                Order order = new Order();
+                {
+                    order.Symbol = "TXFD9";
+                    order.Side = SideEnum.Buy;
+                    order.Price = 10700;
+                    order.Qty = 1;
+                    order.OrderType = OrderTypeEnum.otLimit;
+                    order.TimeInForce = TimeInForceEnum.IOC;
+                }
+
+                MrWangConnection.SnedOrder(order);
             }
             else
             {
@@ -125,9 +146,25 @@ namespace ProgramTrading
         /// </summary>
         private static void MrWangConnection_OnMatchInfo(Match match)
         {
-            Console.WriteLine($"Symbol:{match.Symbol}" +
+            //Console.WriteLine($"Symbol:{match.Symbol}" +
+            //    $" Last:{match.MatchPrice} x {match.MatchQty}" +
+            //    $" Volume:{match.Volume}");
+
+            logger.Info($"Symbol:{match.Symbol}" +
                 $" Last:{match.MatchPrice} x {match.MatchQty}" +
                 $" Volume:{match.Volume}");
+        }
+        static void A()
+        {
+            logger.Error("2");
+        }
+        static void C()
+        {
+            logger.Error("3");
+        }
+        static void B()
+        {
+            logger.Error("5");
         }
     }
 }
